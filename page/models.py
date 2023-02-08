@@ -12,10 +12,10 @@ class Tag(models.Model):
 
 class Page(models.Model):
     name = models.CharField(max_length=80)
-    uuid = models.CharField(max_length=30, unique=True)
+    uuid = models.CharField(max_length=32, unique=True)
     tags = models.ManyToManyField(
         Tag,
-        related_name='tags_page'
+        related_name='tag_pages'
     )
     description = models.TextField()
     owner = models.ForeignKey(
@@ -25,13 +25,13 @@ class Page(models.Model):
     )
     followers = models.ManyToManyField(
         User,
-        related_name='followers_page',
+        related_name='follower_pages',
         blank=True
     )
     is_private = models.BooleanField(default=False)
     follow_requests = models.ManyToManyField(
         User,
-        related_name='follow_requests_page',
+        related_name='follow_requests_pages',
         blank=True
     )
     image = models.URLField(null=True, blank=True)
@@ -46,7 +46,7 @@ class Post(models.Model):
     page = models.ForeignKey(
         Page,
         on_delete=models.CASCADE,
-        related_name='page_post'
+        related_name='page_posts'
     )
     content = models.CharField(max_length=180)
     owner = models.ForeignKey(
@@ -56,7 +56,7 @@ class Post(models.Model):
     )
     liked_by = models.ManyToManyField(
         User,
-        related_name='liked_by_post',
+        related_name='liked_by_posts',
         blank=True
     )
     reply_to = models.ForeignKey(

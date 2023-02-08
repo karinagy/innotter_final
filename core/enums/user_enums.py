@@ -2,9 +2,9 @@ from django.db import models
 
 
 class Roles(models.TextChoices):
-    USER = 'user', 'user'
-    MODERATOR = 'moderator', 'moderator'
-    ADMIN = 'admin', 'admin'
+    USER = 'USER', 'USER'
+    MODERATOR = 'MODERATOR', 'MODERATOR'
+    ADMIN = 'ADMIN', 'ADMIN'
 
 
 class Gender(models.TextChoices):

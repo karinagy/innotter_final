@@ -4,7 +4,7 @@ from user.models import User
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=32, unique=True)
 
     def __str__(self):
         return self.name
@@ -15,7 +15,7 @@ class Page(models.Model):
     uuid = models.CharField(max_length=32, unique=True)
     tags = models.ManyToManyField(
         Tag,
-        related_name='tag_pages'
+        related_name='pages'
     )
     description = models.TextField()
     owner = models.ForeignKey(
@@ -25,13 +25,13 @@ class Page(models.Model):
     )
     followers = models.ManyToManyField(
         User,
-        related_name='follower_pages',
+        related_name='pages',
         blank=True
     )
     is_private = models.BooleanField(default=False)
     follow_requests = models.ManyToManyField(
         User,
-        related_name='follow_requests_pages',
+        related_name='pages',
         blank=True
     )
     image = models.URLField(null=True, blank=True)

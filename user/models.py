@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from core.enums.user_enums import Roles, Gender
+from user.managers import UnBlockedUsersManager
 
 
 class User(AbstractUser):
@@ -23,6 +24,9 @@ class User(AbstractUser):
         blank=False
     )
     is_blocked = models.BooleanField(default=False)
+
+    objects = models.Manager()
+    unblocked_objects = UnBlockedUsersManager()
 
     def __str__(self):
         name = self.username

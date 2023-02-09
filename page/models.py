@@ -15,7 +15,7 @@ class Page(models.Model):
     uuid = models.CharField(max_length=32, unique=True)
     tags = models.ManyToManyField(
         Tag,
-        related_name='pages'
+        related_name='tag_pages'
     )
     description = models.TextField()
     owner = models.ForeignKey(
@@ -25,13 +25,13 @@ class Page(models.Model):
     )
     followers = models.ManyToManyField(
         User,
-        related_name='pages',
+        related_name='followers_pages',
         blank=True
     )
     is_private = models.BooleanField(default=False)
     follow_requests = models.ManyToManyField(
         User,
-        related_name='pages',
+        related_name='follow_requests_pages',
         blank=True
     )
     image = models.URLField(null=True, blank=True)

@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+psycopg2-binary = "*"
+djangorestframework = "*"
+python-dotenv = "*"
+django-mptt = "*"
+django-filter = "*"
+celery = "*"
+rabbitmq = "*"
+fastapi = "*"
+pyjwt = "*"
+boto3 = "*"
+botocore = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

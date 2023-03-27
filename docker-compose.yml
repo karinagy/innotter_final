@@ -1,0 +1,61 @@
+version: '3.3'
+services:
+
+  postgres:
+    image: postgres:latest
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - db.env
+
+  django:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - localstack
+    environment:
+      - .env
+    command: sh ./run.sh
+
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "4566:4566"
+    env_file:
+      - .env
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    command: celery -A innotter worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - .env
+    depends_on:
+      - redis
+      - django
+
+  celery-beat:
+    build: .
+    command: celery -A innotter beat -l INFO
+    volumes:
+      - .:/app
+    environment:
+      - .env
+    depends_on:
+      - redis
+      - django
+
+

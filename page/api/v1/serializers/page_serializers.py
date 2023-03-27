@@ -123,3 +123,32 @@ class DenySubscriptionRequestsSerializer(serializers.ModelSerializer):
 
         page.save()
         return page
+
+
+class ApproveRequestsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ('follow_requests', 'followers')
+
+    def update(self, page, validated_data):
+        users = validated_data.pop('follow_requests')
+        for user in users:
+            page.follow_requests.remove(user)
+            page.followers.add(user)
+
+        page.save()
+        return page
+
+
+class DeclineRequestsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ('follow_requests',)
+
+    def update(self, page, validated_data):
+        users = validated_data.pop('follow_requests')
+        for user in users:
+            page.follow_requests.remove(user)
+
+        page.save()
+        return page

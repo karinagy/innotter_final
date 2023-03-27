@@ -13,6 +13,9 @@ django-filter = "*"
 celery = "*"
 rabbitmq = "*"
 fastapi = "*"
+pyjwt = "*"
+boto3 = "*"
+botocore = "*"
 
 [dev-packages]
 

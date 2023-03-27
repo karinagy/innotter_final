@@ -3,6 +3,8 @@ from rest_framework import serializers
 from page.api.v1.serializers.page_serializers import PageSerializer
 from page.models import Post, Page
 
+ALLOWED_IMAGE_EXTENSIONS = ('jpg', 'png', 'jpeg', 'gif', 'jpeg')
+
 
 class PostSerializer(serializers.ModelSerializer):
     page = PageSerializer()
@@ -65,3 +67,13 @@ class LikedPostsSerializer(serializers.ModelSerializer):
 
         ret['page_post'] = posts
         return ret
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    @staticmethod
+    def validate_extension(image):
+        extension = image.rsplit('.')[-1]
+        if extension.lower() not in ALLOWED_IMAGE_EXTENSIONS:
+            raise serializers.ValidationError(
+                {'status': f'Invalid uploaded image type: {image}'}
+            )

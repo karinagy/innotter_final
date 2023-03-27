@@ -31,4 +31,31 @@ services:
     env_file:
       - .env
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    command: celery -A innotter worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - .env
+    depends_on:
+      - redis
+      - django
+
+  celery-beat:
+    build: .
+    command: celery -A innotter beat -l INFO
+    volumes:
+      - .:/app
+    environment:
+      - .env
+    depends_on:
+      - redis
+      - django
+
 

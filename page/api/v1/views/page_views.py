@@ -1,7 +1,7 @@
 from core.filters import PageFilter
 
 from core.permissions import IsPageOwner, PageAccessPermission
-from core.services import AWSManager
+from core.services import AWSManager, S3Manager
 
 from page.api.v1.serializers.page_serializers import PageOwnerSerializer, PageSerializer, CreatePageSerializer, \
     UpdatePageSerializer, ApproveRequestsSerializer, DeclineRequestsSerializer
@@ -44,7 +44,7 @@ class PageViewSet(viewsets.ModelViewSet):
         image = None
         if 'image' in request.data:
             ImageSerializer.validate_extension(request.data['image'])
-            image = AWSManager.upload_file(self.request.data['image'], 'page' + str(Page.objects.latest('id').id + 1))
+            image = S3Manager.upload_file(self.request.data['image'], 'page' + str(Page.objects.latest('id').id + 1))
 
         data = {**request.data, 'tags': tags_id, 'image': image, 'owner': self.request.user.id}
         serializer = self.get_serializer_class()
@@ -67,14 +67,14 @@ class PageViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         serializer = PageSerializer(self.queryset, many=True)
         for page in serializer.data:
-            page['image'] = AWSManager.create_presigned_url(key=page['image'])
+            page['image'] = S3Manager.create_presigned_url(key=page['image'])
         return Response(serializer.data)
 
     def retrieve(self, request, pk):
         page = get_object_or_404(self.queryset, pk=pk)
         serializer = PageSerializer(page)
         data = serializer.data
-        image = AWSManager.create_presigned_url(key=data['image'])
+        image = S3Manager.create_presigned_url(key=data['image'])
         data['image'] = image
         return Response(data)
 
@@ -85,7 +85,7 @@ class PageViewSet(viewsets.ModelViewSet):
 
     @action(methods=['GET'], url_path=r'\w*follow', permission_classes=[IsAuthenticated], detail=True)
     def follow(self, request, *args, **kwargs):
-        msg = PageService.follow_unfollow_switch(self.get_object(), request)
+        msg = PageService.follow_unfollow(self.get_object(), request)
         return Response(data=msg, status=status.HTTP_201_CREATED)
 
     @action(methods=['PATCH'], url_path='approve-requests', permission_classes=[IsPageOwner],

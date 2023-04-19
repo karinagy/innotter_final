@@ -40,7 +40,7 @@ class PostViewSet(DynamicActionSerializerMixin, viewsets.ModelViewSet):
 
     @action(methods=['GET'], url_path=r'\w*like', permission_classes=[IsAuthenticated], detail=True)
     def like(self, request, *args, **kwargs):
-        msg = PostService.like_unlike_switch(self.get_object(), request)
+        msg = PostService.like_unlike(self.get_object(), request)
         return Response(data=msg, status=status.HTTP_201_CREATED)
 
 

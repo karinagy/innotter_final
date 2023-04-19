@@ -10,7 +10,7 @@ from core.filters import UserFilter
 from core.managers import AWSManager
 from core.permissions import IsAdminOrModerator
 from core.serializers import DynamicActionSerializerMixin
-from core.services import PageService
+from core.services import PageService, S3Manager
 from page.api.v1.serializers.post_serializers import ImageSerializer
 from user.api.v1.serializers.user_serializers import UserSerializer, CreateUserSerializer
 from user.models import User
@@ -37,7 +37,7 @@ class UserViewSet(DynamicActionSerializerMixin, viewsets.ModelViewSet):
     def perform_create(self, serializer):
         if 'image' in self.request.data:
             ImageSerializer.validate_extension(self.request.data['image'])
-            image = AWSManager.upload_file(self.request.data['image'], 'user' + str(User.objects.latest('id').id + 1))
+            image = S3Manager.upload_file(self.request.data['image'], 'user' + str(User.objects.latest('id').id + 1))
             serializer.validated_data['image'] = image
 
         if 'password' in self.request.data:
@@ -57,19 +57,19 @@ class UserViewSet(DynamicActionSerializerMixin, viewsets.ModelViewSet):
         serializer = serializer(instance=self.get_object(), data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        PageService.block_unblock_switch(user_id=int(kwargs['pk']), is_blocked=bool(serializer.data['is_blocked']))
+        PageService.block_unblock(user_id=int(kwargs['pk']), is_blocked=bool(serializer.data['is_blocked']))
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         serializer = UserSerializer(self.queryset, many=True)
         for user in serializer.data:
-            user['image'] = AWSManager.create_presigned_url(key=user['image'])
+            user['image'] = S3Manager.create_presigned_url(key=user['image'])
         return Response(serializer.data)
 
     def retrieve(self, request, pk):
         user = get_object_or_404(self.queryset, pk=pk)
         serializer = UserSerializer(user)
         data = serializer.data
-        image = AWSManager.create_presigned_url(key=data['image'])
+        image = S3Manager.create_presigned_url(key=data['image'])
         data['image'] = image
         return Response(data)

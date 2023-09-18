@@ -45,7 +45,7 @@ A user can have one of 3 roles:
 
     Clone project to your folder
 
-      git clone https://github.com/amarjin6/innotter.git
+      git clone https://github.com/karinagy/innotter_final.git
 
 Check for updates and install all necessary requirements
 
